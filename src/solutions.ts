@@ -4,9 +4,7 @@ interface SolveParams {
   puzzleInput: string;
 }
 
-const findElfCalories = (puzzleInput: string) => puzzleInput.split("\n\n").map(elf => elf.split("\n").reduce((acc, curr) => {
-  return acc + parseInt(curr);
-}, 0));
+const findElfCalories = (puzzleInput: string) => puzzleInput.split("\n\n").map(elf => elf.split("\n").reduce((acc, curr) => acc + parseInt(curr), 0));
 
 const topThreeElfCalories = (puzzleInput: string) => findElfCalories(puzzleInput).sort((a, b) => a < b ? 1 : -1).slice(0, 3).reduce((acc, curr) => acc + curr, 0);
 
