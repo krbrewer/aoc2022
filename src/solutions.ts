@@ -193,8 +193,8 @@ const day4Part1 = (puzzleInput: string) =>
       (acc, curr) =>
         (parseInt(curr[0][0]) <= parseInt(curr[1][0]) &&
           parseInt(curr[0][1]) >= parseInt(curr[1][1])) ||
-          (parseInt(curr[0][0]) >= parseInt(curr[1][0]) &&
-            parseInt(curr[0][1]) <= parseInt(curr[1][1]))
+        (parseInt(curr[0][0]) >= parseInt(curr[1][0]) &&
+          parseInt(curr[0][1]) <= parseInt(curr[1][1]))
           ? acc + 1
           : acc,
       0
@@ -209,10 +209,10 @@ const day4Part2 = (puzzleInput: string) =>
         (parseInt(curr[0][0]) <= parseInt(curr[1][0]) &&
           (parseInt(curr[0][1]) >= parseInt(curr[1][0]) ||
             parseInt(curr[0][1]) >= parseInt(curr[1][1]))) ||
-          (parseInt(curr[0][0]) <= parseInt(curr[1][1]) &&
-            parseInt(curr[0][1]) >= parseInt(curr[1][1])) ||
-          (parseInt(curr[0][0]) >= parseInt(curr[1][0]) &&
-            parseInt(curr[0][1]) <= parseInt(curr[1][1]))
+        (parseInt(curr[0][0]) <= parseInt(curr[1][1]) &&
+          parseInt(curr[0][1]) >= parseInt(curr[1][1])) ||
+        (parseInt(curr[0][0]) >= parseInt(curr[1][0]) &&
+          parseInt(curr[0][1]) <= parseInt(curr[1][1]))
           ? acc + 1
           : acc,
       0
@@ -271,13 +271,127 @@ const day5Part2 = (puzzleInput: string) => {
   return finalStacks.map((stack) => stack[stack.length - 1]).join("");
 };
 
-const day6Part1 = (puzzleInput: string) => 0;
+interface PacketItem {
+  value: string;
+  count: number;
+}
 
-const day6Part2 = (puzzleInput: string) => 0;
+const day6Part1 = (puzzleInput: string) => {
+  let i = 0;
+  const distinctLength = 4;
+  const input = puzzleInput.split("");
+  let startOfPacket = [] as PacketItem[];
+  while (i < puzzleInput.length) {
+    // Start up array
+    if (i < distinctLength) {
+      startOfPacket.find((packet) => packet.value === input[i])
+        ? startOfPacket.map(
+            (packet) => packet.value === input[i] && packet.count++
+          )
+        : startOfPacket.push({ value: input[i], count: 1 });
+    } else if (startOfPacket.find((packet) => packet.count > 1)) {
+      startOfPacket.find((packet) => packet.value === input[i])
+        ? startOfPacket.map(
+            (packet) => packet.value === input[i] && packet.count++
+          )
+        : startOfPacket.push({ value: input[i], count: 1 });
+      startOfPacket.map(
+        (packet) => packet.value === input[i - distinctLength] && packet.count--
+      );
+      startOfPacket = startOfPacket.filter((packet) => packet.count > 0);
+    } else return i;
+    i++;
+  }
+};
 
-const day7Part1 = (puzzleInput: string) => 0;
+const day6Part2 = (puzzleInput: string) => {
+  let i = 0;
+  const distinctLength = 14;
+  const input = puzzleInput.split("");
+  let startOfPacket = [] as PacketItem[];
+  while (i < puzzleInput.length) {
+    // Start up array
+    if (i < distinctLength) {
+      startOfPacket.find((packet) => packet.value === input[i])
+        ? startOfPacket.map(
+            (packet) => packet.value === input[i] && packet.count++
+          )
+        : startOfPacket.push({ value: input[i], count: 1 });
+    } else if (startOfPacket.find((packet) => packet.count > 1)) {
+      startOfPacket.find((packet) => packet.value === input[i])
+        ? startOfPacket.map(
+            (packet) => packet.value === input[i] && packet.count++
+          )
+        : startOfPacket.push({ value: input[i], count: 1 });
+      startOfPacket.map(
+        (packet) => packet.value === input[i - distinctLength] && packet.count--
+      );
+      startOfPacket = startOfPacket.filter((packet) => packet.count > 0);
+    } else return i;
+    i++;
+  }
+};
 
-const day7Part2 = (puzzleInput: string) => 0;
+const day7Part1 = (puzzleInput: string) => {
+  const sizes = [] as number[]
+  let totalInLimit = 0;
+  puzzleInput.split("\n").forEach((line) => {
+    if (line[0] === "$") {
+      const [, command, directory] = line.split(" ");
+      // Change Directory Handling
+      if (command === "cd") {
+        if (directory !== "..") {
+          sizes.push(0)
+        } else {
+          if (sizes[sizes.length - 1] <= 100_000) {
+            totalInLimit += sizes[sizes.length - 1];
+          }
+          sizes.pop();
+        }
+      }
+    } else {
+      const [type] = line.split(" ");
+      if (type !== "dir") {
+        sizes.forEach((p, i) => {
+          sizes[i] = p + parseInt(type);
+        });
+      }
+    }
+  })
+
+  return totalInLimit;
+};
+
+const day7Part2 = (puzzleInput: string) => {
+  const sizes = [] as number[]
+  const completedDirs = [] as number[];
+  puzzleInput.split("\n").forEach((line) => {
+    if (line[0] === "$") {
+      const [, command, directory] = line.split(" ");
+      // Change Directory Handling
+      if (command === "cd") {
+        if (directory !== "..") {
+          sizes.push(0)
+        } else {
+          completedDirs.push(sizes[sizes.length - 1]);
+          sizes.pop();
+        }
+      }
+    } else {
+      const [type] = line.split(" ");
+      if (type !== "dir") {
+        sizes.forEach((p, i) => {
+          sizes[i] = sizes[i] + parseInt(type);
+        });
+      }
+    }
+  })
+
+  const unusedSpace = 70_000_000 - sizes[0];
+  const neededSpace = 30_000_000 - unusedSpace;
+
+  return Math.min(...completedDirs.filter(dir => dir >= neededSpace));
+};
 
 const day8Part1 = (puzzleInput: string) => 0;
 
